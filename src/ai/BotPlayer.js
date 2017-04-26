@@ -1,9 +1,27 @@
 var PlayerTracker = require('../PlayerTracker');
 var Vec2 = require('../modules/Vec2');
+var WebSocket = require('ws');
+var util = require('util');
 
 function BotPlayer() {
     PlayerTracker.apply(this, Array.prototype.slice.call(arguments));
     this.splitCooldown = 0;
+
+    // Connect to the bot controller
+    this.controllerSocket = new WebSocket('ws://localhost:60124');
+
+    var connected = this.controllerConnected = { t: false };
+    this.controllerSocket.on('open', function() {
+        console.log('Connected to the controller!');
+        connected.t = true;
+    });
+    this.controllerSocket.on('error', function(error) {
+        console.log('Controller socket error: %s', error);
+        throw error;
+    });
+    this.controllerSocket.on('message', function(message) {
+        //console.log('received:' + message);
+    });
 }
 module.exports = BotPlayer;
 BotPlayer.prototype = new PlayerTracker();
@@ -38,6 +56,15 @@ BotPlayer.prototype.sendUpdate = function () {
 
 // Custom
 BotPlayer.prototype.decide = function (cell) {
+    if (!this.controllerConnected.t) {
+        console.log("Controller isn't connected yet...");
+        return;
+    }
+
+    //console.log("Sending cell...");
+    this.controllerSocket.send(util.inspect(cell));
+    //console.log("Done");
+
     if (!cell) return; // Cell was eaten, check in the next tick (I'm too lazy)
     var result = new Vec2(0, 0); // For splitting
     
