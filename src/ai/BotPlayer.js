@@ -19,7 +19,7 @@ BotPlayer.prototype.connectToController = function () {
     var botPlayer = this;
     this.controllerSocket.on('open', function() {
         console.log('Connected to the controller!');
-        botPlayer.controllerConnected = true;
+        botPlayer.sendUpdate = botPlayer.sendUpdateWhenConnected;
     });
 
     this.controllerSocket.on('error', function(error) {
@@ -55,12 +55,9 @@ BotPlayer.prototype.checkConnection = function () {
         this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
 };
 
-BotPlayer.prototype.sendUpdate = function () {
-    if (!this.controllerConnected) {
-        console.log("Controller isn't connected yet...");
-        return;
-    }
+BotPlayer.prototype.sendUpdate = function () {};
 
+BotPlayer.prototype.sendUpdateWhenConnected = function () {
     ownCell = this.largest(this.cells);
 
     if (!ownCell) return; // Cell was eaten, check in the next tick (I'm too lazy)
