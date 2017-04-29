@@ -16,17 +16,17 @@ BotPlayer.prototype = new PlayerTracker();
 BotPlayer.prototype.connectToController = function () {
     this.controllerSocket = new WebSocket('ws://localhost:60124');
 
-    var connected = this.controllerConnected = { t: false };
+    var botPlayer = this;
     this.controllerSocket.on('open', function() {
         console.log('Connected to the controller!');
-        connected.t = true;
+        botPlayer.controllerConnected = true;
     });
+
     this.controllerSocket.on('error', function(error) {
         console.log('Controller socket error: %s', error);
         throw error;
     });
 
-    var botPlayer = this;
     this.controllerSocket.on('message', function(message) {
         console.log('Received:' + message);
         botPlayer.handleReceivedAction(JSON.parse(message));
@@ -56,7 +56,7 @@ BotPlayer.prototype.checkConnection = function () {
 };
 
 BotPlayer.prototype.sendUpdate = function () {
-    if (!this.controllerConnected.t) {
+    if (!this.controllerConnected) {
         console.log("Controller isn't connected yet...");
         return;
     }
