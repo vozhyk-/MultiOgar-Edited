@@ -20,7 +20,7 @@ function BotPlayer() {
         throw error;
     });
     this.controllerSocket.on('message', function(message) {
-        //console.log('received:' + message);
+        console.log('Received:' + message);
     });
 }
 module.exports = BotPlayer;
