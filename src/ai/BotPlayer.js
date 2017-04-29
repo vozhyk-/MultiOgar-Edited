@@ -75,7 +75,7 @@ BotPlayer.prototype.decide = function (cell) {
     }
 
     console.log("Sending: " + util.inspect(nodesToSend));
-    this.controllerSocket.send(util.inspect(nodesToSend));
+    this.controllerSocket.send(JSON.stringify(nodesToSend));
 
     var result = new Vec2(0, 0); // For splitting
     
