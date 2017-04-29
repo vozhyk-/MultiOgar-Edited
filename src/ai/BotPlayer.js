@@ -56,16 +56,12 @@ BotPlayer.prototype.checkConnection = function () {
 };
 
 BotPlayer.prototype.sendUpdate = function () {
-    if (this.splitCooldown) this.splitCooldown--;
-    this.decide(this.largest(this.cells)); // Action
-};
-
-// Custom
-BotPlayer.prototype.decide = function (ownCell) {
     if (!this.controllerConnected.t) {
         console.log("Controller isn't connected yet...");
         return;
     }
+
+    ownCell = this.largest(this.cells);
 
     if (!ownCell) return; // Cell was eaten, check in the next tick (I'm too lazy)
 
