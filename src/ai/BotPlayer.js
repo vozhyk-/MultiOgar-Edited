@@ -61,11 +61,22 @@ BotPlayer.prototype.decide = function (cell) {
         return;
     }
 
-    //console.log("Sending cell...");
-    this.controllerSocket.send(util.inspect(cell));
-    //console.log("Done");
-
     if (!cell) return; // Cell was eaten, check in the next tick (I'm too lazy)
+
+    var nodesToSend = [];
+    for (var node of this.viewNodes) {
+        if (node.owner == this) continue;
+
+        nodesToSend.push({
+            cellType: node.cellType,
+            size: node._size,
+            position: node.position
+        });
+    }
+
+    console.log("Sending: " + util.inspect(nodesToSend));
+    this.controllerSocket.send(util.inspect(nodesToSend));
+
     var result = new Vec2(0, 0); // For splitting
     
     for (var i = 0; i < this.viewNodes.length; i++) {
