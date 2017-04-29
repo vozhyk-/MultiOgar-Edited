@@ -76,7 +76,7 @@ BotPlayer.prototype.decide = function (ownCell) {
         nodesToSend.push({
             cellType: node.cellType,
             size: node._size,
-            position: node.position
+            position: node.position.clone().sub(ownCell.position)
         });
     }
 
