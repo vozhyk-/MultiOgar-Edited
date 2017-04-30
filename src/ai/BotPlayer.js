@@ -22,6 +22,11 @@ BotPlayer.prototype.connectToController = function () {
         botPlayer.sendUpdate = botPlayer.sendUpdateWhenConnected;
     });
 
+    this.controllerSocket.on('close', function() {
+        console.log('Disconnected from the controller!');
+        botPlayer.sendUpdate = function() {};
+    });
+
     this.controllerSocket.on('error', function(error) {
         console.log('Controller socket error: %s', error);
         throw error;
