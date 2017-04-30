@@ -14,7 +14,9 @@ BotPlayer.prototype = new PlayerTracker();
 
 
 BotPlayer.prototype.connectToController = function () {
-    this.controllerSocket = new WebSocket('ws://localhost:60124');
+    this.controllerSocket = new WebSocket('ws://localhost:60124', {
+        perMessageDeflate: false
+    });
 
     var botPlayer = this;
     this.controllerSocket.on('open', function() {
