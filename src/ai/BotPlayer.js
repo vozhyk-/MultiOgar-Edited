@@ -30,8 +30,8 @@ BotPlayer.prototype.connectToController = function () {
     });
 
     this.controllerSocket.on('error', function(error) {
-        console.log('Controller socket error: %s', error);
-        throw error;
+        console.log('Controller socket error, disconnecting: ' + error);
+        botPlayer.controllerSocket.close();
     });
 
     this.controllerSocket.on('message', function(message) {
