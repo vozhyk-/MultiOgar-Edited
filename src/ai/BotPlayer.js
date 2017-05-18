@@ -1,3 +1,4 @@
+"use strict";
 var PlayerTracker = require('../PlayerTracker');
 var Vec2 = require('../modules/Vec2');
 var WebSocket = require('ws');
@@ -58,14 +59,18 @@ BotPlayer.prototype.checkConnection = function () {
         return;
     }
     // Respawn if bot is dead
-    if (!this.cells.length)
+    if (!this.cells.length) {
+        this.controllerSocket.send(JSON.stringify({
+            score: this._score
+        }));
         this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
+    }
 };
 
 BotPlayer.prototype.sendUpdate = function () {};
 
 BotPlayer.prototype.sendUpdateWhenConnected = function () {
-    ownCell = this.largest(this.cells);
+    var ownCell = this.largest(this.cells);
 
     if (!ownCell) return; // Cell was eaten, check in the next tick (I'm too lazy)
 
