@@ -49,7 +49,7 @@ PacketHandler.prototype.handleBotJoin = function (message) {
 
 PacketHandler.prototype.handleBotMessage = function (message) {
     this.socket.playerTracker.handleReceivedAction(
-        message.slice(1).toString());
+        JSON.parse(message.slice(1).toString()));
 };
 
 PacketHandler.prototype.handshake_onProtocol = function (message) {
