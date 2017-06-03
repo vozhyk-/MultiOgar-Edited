@@ -37,6 +37,7 @@ PacketHandler.prototype.handleMessage = function (message) {
 
 PacketHandler.prototype.handleBotJoin = function (message) {
     console.log("Bot joined!");
+    this.sendPacket = function() {};
     this.socket.playerTracker = new BotPlayer(this.gameServer, this.socket);
     this.setNickname(this.gameServer.bots.getName());
     console.log("Bot added!");

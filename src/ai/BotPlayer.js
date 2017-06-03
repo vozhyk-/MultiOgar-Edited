@@ -21,24 +21,9 @@ BotPlayer.prototype.largest = function (list) {
     return sorted[0];
 };
 
-BotPlayer.prototype.checkConnection = function () {
-    if (this.socket.isCloseRequest) {
-        while (this.cells.length) {
-            this.gameServer.removeNode(this.cells[0]);
-        }
-        this.isRemoved = true;
-        return;
-    }
-    // Respawn if bot is dead
-    if (!this.cells.length) {
-        this.socket.send(JSON.stringify({
-            score: this._score
-        }));
-        this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
-    }
+BotPlayer.prototype.joinGame = function () {
+    this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
 };
-
-BotPlayer.prototype.joinGame = function () {};
 
 BotPlayer.prototype.sendUpdate = function () {
     var ownCell = this.largest(this.cells);
