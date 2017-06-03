@@ -326,12 +326,27 @@ PacketHandler.prototype.setNickname = function (text) {
 };
 
 PacketHandler.prototype.sendPacket = function(packet) {
-    var socket = this.socket;
-    if (!packet || socket.isConnected == null || socket.playerTracker.isMi) 
+    if (!packet)
         return;
-    if (socket.readyState == this.gameServer.WebSocket.OPEN) {
+
+    this.trySend(function(socket) {
         var buffer = packet.build(this.protocol);
         if (buffer) socket.send(buffer, { binary: true });
+    });
+};
+
+PacketHandler.prototype.sendPlaintext = function(text) {
+    this.trySend(function(socket) {
+        socket.send(text);
+    });
+};
+
+PacketHandler.prototype.trySend = function(send) {
+    var socket = this.socket;
+    if (socket.isConnected == null || socket.playerTracker.isMi) 
+        return;
+    if (socket.readyState == this.gameServer.WebSocket.OPEN) {
+        send(socket);
     } else {
         socket.readyState = this.gameServer.WebSocket.CLOSED;
         socket.emit('close');

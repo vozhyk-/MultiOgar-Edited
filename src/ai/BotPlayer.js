@@ -57,9 +57,7 @@ BotPlayer.prototype.sendUpdate = function () {
     }
 
     console.log("Sending: " + util.inspect(nodesToSend));
-    // TODO Write this.socket.packetHandler.send()
-    // (like sendPacket, but without the packet-specific logic)
-    this.socket.send(JSON.stringify(nodesToSend));
+    this.socket.packetHandler.sendPlaintext(JSON.stringify(nodesToSend));
 };
 
 BotPlayer.prototype.handleReceivedAction = function (action) {
