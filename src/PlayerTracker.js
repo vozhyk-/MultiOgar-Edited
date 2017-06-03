@@ -179,6 +179,7 @@ PlayerTracker.prototype.joinGame = function(name, skin) {
 PlayerTracker.prototype.checkConnection = function() {
     // Handle disconnection
     if (!this.socket.isConnected) {
+        console.log("Player disconnected.");
         // Wait for playerDisconnectTime
         var pt = this.gameServer.config.playerDisconnectTime;
         var dt = (this.gameServer.stepDateTime - this.socket.closeTime) / 1e3;
@@ -201,6 +202,7 @@ PlayerTracker.prototype.checkConnection = function() {
         if (dt >= this.gameServer.config.serverTimeout) {
             this.socket.close(1000, "Connection timeout");
             this.isCloseRequested = true;
+            console.log("Player connection timed out.");
         }
     }
 };
