@@ -1,6 +1,8 @@
 var Packet = require('./packet');
 var BinaryReader = require('./packet/BinaryReader');
 
+var BotPlayer = require('./ai/BotPlayer');
+
 function PacketHandler(gameServer, socket) {
     this.gameServer = gameServer;
     this.socket = socket;
@@ -19,6 +21,7 @@ function PacketHandler(gameServer, socket) {
     this.mouseData = null;
     this.handler = {
         254: this.handshake_onProtocol.bind(this),
+        "!": this.handleBotJoin.bind(this)
     };
 }
 
@@ -30,6 +33,22 @@ PacketHandler.prototype.handleMessage = function (message) {
 
     this.handler[message[0]](message);
     this.socket.lastAliveTime = this.gameServer.stepDateTime;
+};
+
+PacketHandler.prototype.handleBotJoin = function (message) {
+    console.log("Bot joined!");
+    this.socket.playerTracker = new BotPlayer(this.gameServer, this.socket);
+    this.setNickname(this.gameServer.bots.getName());
+    console.log("Bot added!");
+
+    this.handler = {
+        ";": this.handleBotMessage.bind(this)
+    };
+};
+
+PacketHandler.prototype.handleBotMessage = function (message) {
+    this.socket.playerTracker.handleReceivedAction(
+        message.slice(1).toString());
 };
 
 PacketHandler.prototype.handshake_onProtocol = function (message) {

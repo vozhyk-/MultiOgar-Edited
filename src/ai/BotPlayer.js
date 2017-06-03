@@ -7,39 +7,10 @@ var util = require('util');
 function BotPlayer() {
     PlayerTracker.apply(this, Array.prototype.slice.call(arguments));
     this.splitCooldown = 0;
-
-    this.connectToController();
 }
 module.exports = BotPlayer;
 BotPlayer.prototype = new PlayerTracker();
 
-
-BotPlayer.prototype.connectToController = function () {
-    this.controllerSocket = new WebSocket('ws://localhost:60124', {
-        perMessageDeflate: false
-    });
-
-    var botPlayer = this;
-    this.controllerSocket.on('open', function() {
-        console.log('Connected to the controller!');
-        botPlayer.sendUpdate = botPlayer.sendUpdateWhenConnected;
-    });
-
-    this.controllerSocket.on('close', function() {
-        console.log('Disconnected from the controller!');
-        botPlayer.sendUpdate = function() {};
-    });
-
-    this.controllerSocket.on('error', function(error) {
-        console.log('Controller socket error, disconnecting: ' + error);
-        botPlayer.controllerSocket.close();
-    });
-
-    this.controllerSocket.on('message', function(message) {
-        console.log('Received:' + message);
-        botPlayer.handleReceivedAction(JSON.parse(message));
-    });
-};
 
 BotPlayer.prototype.largest = function (list) {
     // Sort the cells by Array.sort() function to avoid errors
@@ -60,16 +31,16 @@ BotPlayer.prototype.checkConnection = function () {
     }
     // Respawn if bot is dead
     if (!this.cells.length) {
-        this.controllerSocket.send(JSON.stringify({
+        this.socket.send(JSON.stringify({
             score: this._score
         }));
         this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
     }
 };
 
-BotPlayer.prototype.sendUpdate = function () {};
+BotPlayer.prototype.joinGame = function () {};
 
-BotPlayer.prototype.sendUpdateWhenConnected = function () {
+BotPlayer.prototype.sendUpdate = function () {
     var ownCell = this.largest(this.cells);
 
     if (!ownCell) return; // Cell was eaten, check in the next tick (I'm too lazy)
@@ -86,7 +57,9 @@ BotPlayer.prototype.sendUpdateWhenConnected = function () {
     }
 
     console.log("Sending: " + util.inspect(nodesToSend));
-    this.controllerSocket.send(JSON.stringify(nodesToSend));
+    // TODO Write this.socket.packetHandler.send()
+    // (like sendPacket, but without the packet-specific logic)
+    this.socket.send(JSON.stringify(nodesToSend));
 };
 
 BotPlayer.prototype.handleReceivedAction = function (action) {
