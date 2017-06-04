@@ -330,8 +330,9 @@ PacketHandler.prototype.sendPacket = function(packet) {
     if (!packet)
         return;
 
+    var self = this;
     this.trySend(function(socket) {
-        var buffer = packet.build(this.protocol);
+        var buffer = packet.build(self.protocol);
         if (buffer) socket.send(buffer, { binary: true });
     });
 };
