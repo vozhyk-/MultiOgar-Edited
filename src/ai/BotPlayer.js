@@ -25,6 +25,13 @@ BotPlayer.prototype.joinGame = function () {
     this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
 };
 
+BotPlayer.prototype.checkConnection = function () {
+    PlayerTracker.prototype.checkConnection.call(this);
+
+    if (!this.cells.length)
+        this.socket.close(1000, "Bot died");
+};
+
 BotPlayer.prototype.sendUpdate = function () {
     var ownCell = this.largest(this.cells);
 
