@@ -4,9 +4,12 @@ var Vec2 = require('../modules/Vec2');
 var WebSocket = require('ws');
 var util = require('util');
 
+var idCounter = 0;
+
 function BotPlayer() {
     PlayerTracker.apply(this, Array.prototype.slice.call(arguments));
-    this.splitCooldown = 0;
+    this.id = ++idCounter;
+    console.log("New BotPlayer: id = " + this.id);
 }
 module.exports = BotPlayer;
 BotPlayer.prototype = new PlayerTracker();
@@ -22,20 +25,26 @@ BotPlayer.prototype.largest = function (list) {
 };
 
 BotPlayer.prototype.joinGame = function () {
+    console.log("Spawning bot " + this.id);
     this.gameServer.gameMode.onPlayerSpawn(this.gameServer, this);
 };
 
 BotPlayer.prototype.checkConnection = function () {
     PlayerTracker.prototype.checkConnection.call(this);
 
-    if (!this.cells.length)
+    if (!this.cells.length) {
+        console.log("Bot " + this.id + " has died");
         this.socket.close(1000, "Bot died");
+    }
 };
 
 BotPlayer.prototype.sendUpdate = function () {
+    console.log("Trying to send update for bot " + this.id);
     var ownCell = this.largest(this.cells);
 
     if (!ownCell) return; // Cell was eaten, check in the next tick (I'm too lazy)
+
+    console.log("Sending update for bot " + this.id);
 
     var nodesToSend = [];
     for (var node of this.viewNodes) {
@@ -59,7 +68,9 @@ BotPlayer.prototype.sendUpdate = function () {
 };
 
 BotPlayer.prototype.handleReceivedAction = function (action) {
+    console.log("Received action for bot " + this.id);
     var ownCell = this.largest(this.cells);
+    console.log("Bot " + this.id + " has " + this.cells.length + " cells");
     if (!ownCell)
         // The server has managed to send an update,
         // but the cell has died before the client has replied with an action.
