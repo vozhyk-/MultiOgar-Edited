@@ -59,12 +59,18 @@ BotPlayer.prototype.sendUpdate = function () {
 };
 
 BotPlayer.prototype.handleReceivedAction = function (action) {
+    var ownCell = this.largest(this.cells);
+    if (!ownCell)
+        // The server has managed to send an update,
+        // but the cell has died before the client has replied with an action.
+        // Ignore the action.
+        return;
+
     var directionInRad = action.direction * Math.PI / 180;
     var displacement = new Vec2(
         Math.cos(directionInRad),
         Math.sin(directionInRad));
 
-    var ownCell = this.largest(this.cells);
     this.mouse = ownCell.position.clone()
         .add(displacement, 800);
 };
