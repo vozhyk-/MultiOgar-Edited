@@ -57,13 +57,18 @@ BotPlayer.prototype.sendUpdate = function () {
         });
     }
 
+    var worldToSend = {
+        others: nodesToSend,
+        ownSize: ownCell._size
+    };
+
     var scoreToSend = {
         score: this._score
     };
 
     //console.log("Sending world: " + util.inspect(nodesToSend));
     //console.log("Sending score: " + util.inspect(scoreToSend));
-    this.socket.packetHandler.sendPlaintext(JSON.stringify(nodesToSend));
+    this.socket.packetHandler.sendPlaintext(JSON.stringify(worldToSend));
     this.socket.packetHandler.sendPlaintext(JSON.stringify(scoreToSend));
 };
 
